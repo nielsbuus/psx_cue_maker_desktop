@@ -92,10 +92,10 @@ bool file_exists(string filename) {
   HANDLE search_handle = FindFirstFile(filename.c_str(), &find_data);
   auto error_code = GetLastError();
   FindClose(search_handle);
-  
+
   if (error_code == ERROR_FILE_NOT_FOUND) return false;
-  if (error_code == ERROR_SUCCESS) return true;
-  throw runtime_error("File existence check failed.");
+  if (error_code == ERROR_NO_MORE_FILES) return true;
+  throw error_code;
 }
 
 int main(int argc, const char* argv[]) {
@@ -120,8 +120,15 @@ int main(int argc, const char* argv[]) {
     }
   }
   catch (const exception& e) {
-    MessageBox(nullptr, "Win32 error occured.", "Error", MB_OK | MB_ICONERROR);
+    MessageBox(nullptr, e.what(), "Error", MB_OK | MB_ICONERROR);
     return EXIT_FAILURE;
+  }
+  catch (DWORD error_code) {
+    LPSTR buffer = nullptr;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr,
+      error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&buffer), 0, nullptr);
+    MessageBox(nullptr, buffer, "Error", MB_OK | MB_ICONERROR);
+    LocalFree(buffer);
   }
   
   return EXIT_SUCCESS;
