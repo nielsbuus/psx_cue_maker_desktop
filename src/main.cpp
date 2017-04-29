@@ -41,10 +41,9 @@ optional<string> select_directory() {
       throw runtime_error("SHGetPathFromIDList failed.");
     };
     CoTaskMemFree(idlist);
-    return select_directory_path;
+    return string(select_directory_path);
   }
 }
-
 
 vector<string> find_bin_files(string directory) {
   vector<string> result;
@@ -112,10 +111,14 @@ int main(int argc, const char* argv[]) {
         auto cuesheet = generate_cuesheet(files);
         string filename = generate_cuesheet_filename(files);
         string full_filename = *dir + '\\' + filename;
-        if (file_exists(full_filename)) {
-          MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING);
-        }
-        MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
+
+        bool write_file = true;
+        if (file_exists(full_filename) &&
+          (MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDNO)) {
+            write_file = false;
+          }
+
+        if (write_file) MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
       }
     }
   }
