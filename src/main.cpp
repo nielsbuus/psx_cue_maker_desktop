@@ -1,6 +1,7 @@
 #include <cstdlib>
 
 #include <vector>
+#include <fstream>
 #include <sstream>
 #include <experimental/optional>
 
@@ -115,7 +116,10 @@ int main(int argc, const char* argv[]) {
           write_file = false;
         }
 
-      if (write_file) MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
+      if (write_file) {
+        ofstream file(full_filename.c_str(), ios::out | ios::binary);
+        file << cuesheet.c_str();
+      }
     }
   }
   catch (const exception& e) {
