@@ -104,22 +104,18 @@ int main(int argc, const char* argv[]) {
     auto dir = select_directory();
     if (dir) {
       auto files = find_bin_files(*dir);
-      if (files.empty()) {
-        MessageBox(nullptr, "No bin files found in the selected directory.", "Error", MB_OK | MB_ICONERROR);
-      }
-      else {
-        auto cuesheet = generate_cuesheet(files);
-        string filename = generate_cuesheet_filename(files);
-        string full_filename = *dir + '\\' + filename;
+      if (files.empty()) throw runtime_error("No bin files found in the selected directory.");
+      auto cuesheet = generate_cuesheet(files);
+      string filename = generate_cuesheet_filename(files);
+      string full_filename = *dir + '\\' + filename;
 
-        bool write_file = true;
-        if (file_exists(full_filename) &&
-          (MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDNO)) {
-            write_file = false;
-          }
+      bool write_file = true;
+      if (file_exists(full_filename) &&
+        (MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDNO)) {
+          write_file = false;
+        }
 
-        if (write_file) MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
-      }
+      if (write_file) MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
     }
   }
   catch (const exception& e) {
