@@ -85,6 +85,17 @@ string generate_cuesheet_filename(vector<string> files) {
   return "Cuesheet.cue";
 }
 
+bool file_exists(string filename) {
+  WIN32_FIND_DATA find_data {};
+  HANDLE search_handle = FindFirstFile(filename.c_str(), &find_data);
+  auto error_code = GetLastError();
+  FindClose(search_handle);
+  
+  if (error_code == ERROR_FILE_NOT_FOUND) return false;
+  if (error_code == ERROR_SUCCESS) return true;
+  throw runtime_error("File existence check failed.");
+}
+
 int main(int argc, const char* argv[]) {  
   COM com;  
   
@@ -96,6 +107,9 @@ int main(int argc, const char* argv[]) {
     } else {
       auto cuesheet = generate_cuesheet(files);
       string filename = generate_cuesheet_filename(files);
+      if (file_exists(filename)) {
+		MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING);
+	  }
     }
   }
   
