@@ -81,6 +81,10 @@ string generate_cuesheet(vector<string> files) {
   return ss.str();
 }
 
+string generate_cuesheet_filename(vector<string> files) {
+  return "Cuesheet.cue";
+}
+
 int main(int argc, const char* argv[]) {  
   COM com;  
   
@@ -91,7 +95,7 @@ int main(int argc, const char* argv[]) {
       MessageBox(nullptr, "No bin files found in the selected directory.", "Error", MB_OK | MB_ICONERROR);
     } else {
       auto cuesheet = generate_cuesheet(files);
-      MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
+      string filename = generate_cuesheet_filename(files);
     }
   }
   
