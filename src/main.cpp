@@ -52,14 +52,14 @@ int main(int argc, const char* argv[]) {
     int track_count = 0;
     HANDLE search_handle = FindFirstFile(search_path.c_str(), &search_data);
     cout << "FILE \"" << search_data.cFileName << "\" BINARY\n";
-    cout << "TRACK 01 MODE2/2352\n";
-    cout << "INDEX 01 00:00:00\n";
+    cout << "  TRACK 01 MODE2/2352\n";
+    cout << "    INDEX 01 00:00:00\n";
     while (FindNextFile(search_handle, &search_data)) {
       ++track_count;
       cout << "FILE \"" << search_data.cFileName << "\" BINARY\n";
-      cout << "TRACK 0" << track_count << " AUDIO\n";
-      cout << "INDEX 00 00:00:00\n";
-      cout << "INDEX 01 00:02:00\n";
+      cout << "  TRACK 0" << track_count << " AUDIO\n";
+      cout << "   INDEX 00 00:00:00\n";
+      cout << "   INDEX 01 00:02:00\n";
     }
     FindClose(search_handle);
   }
