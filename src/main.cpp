@@ -52,11 +52,13 @@ vector<string> find_bin_files(string directory) {
 
   WIN32_FIND_DATA search_data {};
   HANDLE search_handle = FindFirstFile(search_path.c_str(), &search_data);
-  result.emplace_back(search_data.cFileName);
-  while (FindNextFile(search_handle, &search_data)) {
+  if (GetLastError() != ERROR_FILE_NOT_FOUND) {
     result.emplace_back(search_data.cFileName);
+    while (FindNextFile(search_handle, &search_data)) {
+      result.emplace_back(search_data.cFileName);
+    }
+    FindClose(search_handle);
   }
-  FindClose(search_handle);
   
   return result;
 }
