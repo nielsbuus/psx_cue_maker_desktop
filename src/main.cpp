@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include <vector>
 #include <sstream>
 #include <experimental/optional>
@@ -96,22 +98,31 @@ bool file_exists(string filename) {
   throw runtime_error("File existence check failed.");
 }
 
-int main(int argc, const char* argv[]) {  
-  COM com;  
-  
-  auto dir = select_directory();
-  if (dir) {
-    auto files = find_bin_files(*dir);
-    if (files.empty()) {
-      MessageBox(nullptr, "No bin files found in the selected directory.", "Error", MB_OK | MB_ICONERROR);
-    } else {
-      auto cuesheet = generate_cuesheet(files);
-      string filename = generate_cuesheet_filename(files);
-      if (file_exists(filename)) {
-		MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING);
-	  }
+int main(int argc, const char* argv[]) {
+  try {
+    COM com;
+
+    auto dir = select_directory();
+    if (dir) {
+      auto files = find_bin_files(*dir);
+      if (files.empty()) {
+        MessageBox(nullptr, "No bin files found in the selected directory.", "Error", MB_OK | MB_ICONERROR);
+      }
+      else {
+        auto cuesheet = generate_cuesheet(files);
+        string filename = generate_cuesheet_filename(files);
+        string full_filename = *dir + '\\' + filename;
+        if (file_exists(full_filename)) {
+          MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING);
+        }
+        MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
+      }
     }
   }
+  catch (const exception& e) {
+    MessageBox(nullptr, "Win32 error occured.", "Error", MB_OK | MB_ICONERROR);
+    return EXIT_FAILURE;
+  }
   
-  return 0;
+  return EXIT_SUCCESS;
 }
