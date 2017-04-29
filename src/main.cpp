@@ -85,9 +85,12 @@ int main(int argc, const char* argv[]) {
   auto dir = select_directory();
   if (dir) {
     auto files = find_bin_files(*dir);
-    auto cuesheet = generate_cuesheet(files);
-  
-    MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
+    if (files.empty()) {
+      MessageBox(nullptr, "No bin files found in the selected directory.", "Error", MB_OK | MB_ICONERROR);
+    } else {
+      auto cuesheet = generate_cuesheet(files);
+      MessageBox(nullptr, cuesheet.c_str(), "Cuesheet", MB_OK | MB_ICONINFORMATION);
+    }
   }
   
   return 0;
