@@ -27,6 +27,24 @@ public:
   }
 };
 
+class file_search {
+public:
+  WIN32_FIND_DATA find_data;
+  HANDLE handle;
+
+  file_search(string search_path) : find_data({}) {
+    handle = FindFirstFile(search_path.c_str(), &find_data);
+  }
+
+  ~file_search() {
+    if (handle != nullptr) FindClose(handle);
+  }
+
+  bool find_next() {
+    return FindNextFile(handle, &find_data);
+  }
+};
+
 optional<string> select_directory() {
   BROWSEINFO browseinfo {};
   browseinfo.pszDisplayName = select_directory_path;
@@ -52,14 +70,12 @@ vector<string> find_bin_files(string directory) {
   string search_path(directory);
   search_path += "\\*.bin";
 
-  WIN32_FIND_DATA search_data {};
-  HANDLE search_handle = FindFirstFile(search_path.c_str(), &search_data);
+  file_search fs(search_path);
   if (GetLastError() != ERROR_FILE_NOT_FOUND) {
-    result.emplace_back(search_data.cFileName);
-    while (FindNextFile(search_handle, &search_data)) {
-      result.emplace_back(search_data.cFileName);
+    result.emplace_back(fs.find_data.cFileName);
+    while (fs.find_next()) {
+      result.emplace_back(fs.find_data.cFileName);
     }
-    FindClose(search_handle);
   }
   
   return result;
@@ -88,10 +104,8 @@ string generate_cuesheet_filename(vector<string> files) {
 }
 
 bool file_exists(string filename) {
-  WIN32_FIND_DATA find_data {};
-  HANDLE search_handle = FindFirstFile(filename.c_str(), &find_data);
+  file_search fs(filename);
   auto error_code = GetLastError();
-  FindClose(search_handle);
 
   if (error_code == ERROR_FILE_NOT_FOUND) return false;
   if (error_code == ERROR_NO_MORE_FILES) return true;
