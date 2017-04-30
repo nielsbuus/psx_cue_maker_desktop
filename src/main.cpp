@@ -133,7 +133,7 @@ int main(int argc, const char* argv[]) {
         }
 
       if (write_file) {
-        ofstream file(full_filename.c_str(), ios::out | ios::binary);
+        ofstream file(full_filename.c_str(), ios::out);
         file << cuesheet.c_str();
       }
     }
