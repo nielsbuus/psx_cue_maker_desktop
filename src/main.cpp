@@ -148,6 +148,7 @@ int main(int argc, const char* argv[]) {
       error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&buffer), 0, nullptr);
     MessageBox(nullptr, buffer, "Error", MB_OK | MB_ICONERROR);
     LocalFree(buffer);
+    return EXIT_FAILURE;
   }
   
   return EXIT_SUCCESS;
