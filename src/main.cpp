@@ -43,6 +43,8 @@ public:
   bool find_next() {
     return FindNextFile(handle, &find_data);
   }
+
+  inline const char* found_filename() { return find_data.cFileName; };
 };
 
 optional<string> select_directory() {
@@ -72,9 +74,9 @@ vector<string> find_bin_files(string directory) {
 
   file_search fs(search_path);
   if (GetLastError() != ERROR_FILE_NOT_FOUND) {
-    result.emplace_back(fs.find_data.cFileName);
+    result.emplace_back(fs.found_filename());
     while (fs.find_next()) {
-      result.emplace_back(fs.find_data.cFileName);
+      result.emplace_back(fs.found_filename());
     }
   }
   
