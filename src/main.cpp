@@ -100,8 +100,25 @@ string generate_cuesheet(vector<string> files) {
   return ss.str();
 }
 
-string generate_cuesheet_filename(vector<string> files) {
-  return "Cuesheet.cue";
+optional<string> get_cuesheet_filename(string directory, vector<string> files) {
+  TCHAR filename[MAX_PATH];
+  filename[0] = 0;
+  OPENFILENAME save_dialog {};
+  save_dialog.lStructSize = sizeof(save_dialog);
+  save_dialog.lpstrFilter = "Cuesheet files (*.cue)\0*.cue\0All files\0*";
+  save_dialog.lpstrDefExt = "cue";
+  save_dialog.lpstrFile = filename;
+  save_dialog.lpstrInitialDir = directory.c_str();
+  save_dialog.nMaxFile = MAX_PATH;
+  save_dialog.Flags = OFN_DONTADDTORECENT | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
+  save_dialog.FlagsEx = OFN_EX_NOPLACESBAR;
+
+  if (GetSaveFileName(&save_dialog)) {
+    return string(filename);
+  }
+  else {
+    return {};
+  }
 }
 
 bool file_exists(string filename) {
@@ -122,17 +139,9 @@ int main(int argc, const char* argv[]) {
       auto files = find_bin_files(*dir);
       if (files.empty()) throw runtime_error("No bin files found in the selected directory.");
       auto cuesheet = generate_cuesheet(files);
-      string filename = generate_cuesheet_filename(files);
-      string full_filename = *dir + '\\' + filename;
-
-      bool write_file = true;
-      if (file_exists(full_filename) &&
-        (MessageBox(nullptr, "A cuesheet file already exists. Do you want to overwrite it?", "File exists", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDNO)) {
-          write_file = false;
-        }
-
-      if (write_file) {
-        ofstream file(full_filename.c_str(), ios::out);
+      auto filename = get_cuesheet_filename(*dir, files);
+      if (filename) {
+        ofstream file(filename->c_str(), ios::out);
         file << cuesheet.c_str();
       }
     }
