@@ -68,11 +68,8 @@ optional<string> select_directory() {
 
 vector<string> find_bin_files(string directory) {
   vector<string> result;
-  
-  string search_path(directory);
-  search_path += "\\*.bin";
 
-  file_search fs(search_path);
+  file_search fs(directory + "\\*.bin");
   if (GetLastError() != ERROR_FILE_NOT_FOUND) {
     result.emplace_back(fs.found_filename());
     while (fs.find_next()) {
