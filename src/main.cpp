@@ -90,8 +90,9 @@ string generate_cuesheet(vector<string> files) {
     for(size_t track = 1; track < files.size(); ++track) {
       ss << "FILE \"" << files.at(track) << "\" BINARY\n";
       ss << "  TRACK ";
-      if (track < 10) ss << '0';
-      ss << track << " AUDIO\n";
+      size_t track2 = track + 1;
+      if (track2 < 10) ss << '0';
+      ss << track2 << " AUDIO\n";
       ss << "   INDEX 00 00:00:00\n";
       ss << "   INDEX 01 00:02:00\n";
     };
